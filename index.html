@@ -46,16 +46,7 @@
             transition: opacity 0.4s ease;
         }
 
-        /* เมื่อเอาเมาส์ชี้การ์ด ให้แสงสว่างขึ้นและขยับการ์ดลอยขึ้นนิดนึง */
-        .profile-card:hover {
-            transform: translateY(-8px);
-        }
-
-        .profile-card:hover::before {
-            opacity: 1;
-        }
-
-        /* ตกแต่งรูปภาพ */
+        /* ตกแต่งรูปภาพและตั้งค่าให้รองรับการเคลื่อนไหวแบบนุ่มนวล */
         .profile-img {
             width: 160px;
             height: 160px;
@@ -63,13 +54,21 @@
             object-fit: cover;
             border: 3px solid #333;
             margin-bottom: 20px;
-            transition: transform 0.3s ease, border-color 0.3s ease;
+            transition: transform 0.3s ease, border-color 0.3s ease; /* ทำให้รูปขยายและเปลี่ยนสีขอบแบบนุ่มนวล */
         }
 
-        /* เมื่อเอาเมาส์ชี้ที่รูปภาพโดยตรง */
-        .profile-card a:hover .profile-img {
-            transform: scale(1.05);
-            border-color: #a855f7;
+        /* เมื่อเอาเมาส์ขยับมาชนการ์ด (Hover) */
+        .profile-card:hover {
+            transform: translateY(-8px); /* การ์ดลอยขึ้นเล็กน้อย */
+        }
+
+        .profile-card:hover::before {
+            opacity: 1; /* แสดงแสงเรือง ขาว ม่วง แดง */
+        }
+
+        .profile-card:hover .profile-img {
+            transform: scale(1.12); /* ขยายรูปภาพขึ้น 12% เมื่อเมาส์ชนการ์ด */
+            border-color: #a855f7; /* เปลี่ยนสีขอบรูปเป็นสีม่วง */
         }
 
         /* ตกแต่งข้อความ */
@@ -99,10 +98,10 @@
 <body>
 
     <div class="profile-card">
-        <!-- ใส่ลิงก์ที่คุณต้องการใน href เช่น ลิงก์เฟสบุ๊ค หรือเว็บคณะ (ตอนนี้ใส่เว็บ ม.นครพนม ไว้ให้ค่ะ) -->
+        <!-- ใส่ลิงก์เมื่อคลิกที่รูปภาพ (ตอนนี้ลิงก์ไปเว็บ ม.นครพนม) -->
         <a href="https://www.npu.ac.th/" target="_blank">
-            <!-- ดึงรูปภาพเดิมจากหน้าเว็บของคุณมาใส่ให้แล้วค่ะ -->
-            <img class="profile-img" src="https://stickershop.line-scdn.net/stickershop/v1/product/8408791/LINEStorePC/main.png?v=1" alt="รูปโปรไฟล์ นาย ธนพล">
+            <!-- สามารถเปลี่ยนลิงก์รูปภาพใน src เป็นรูปจริงของคุณได้เลยนะคะ -->
+            <img class="profile-img" src="https://images.unsplash.com/photo-1534308143481-c55f00be8bd7?auto=format&fit=crop&w=300&q=80" alt="รูปโปรไฟล์ นาย ธนพล">
         </a>
         
         <h2>นาย ธนพล วะชุม</h2>
