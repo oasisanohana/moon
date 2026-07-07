@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แนะนำตัวนักศึกษา - ธนพล วะชุม</title>
+    <style>
+        /* จัดโครงสร้างพื้นฐานและพื้นหลัง */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #121212; /* พื้นหลังสีเข้มช่วยให้แสงเรืองสวยขึ้น */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        /* กล่องการ์ดแนะนำตัว */
+        .profile-card {
+            position: relative;
+            background-color: #1e1e1e;
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            width: 320px;
+            z-index: 1;
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* สร้างลูกเล่นแสงไล่สี (ขาว ม่วง แดง) ไว้ด้านหลัง */
+        .profile-card::before {
+            content: "";
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            background: linear-gradient(45deg, #ffffff, #a855f7, #ef4444);
+            z-index: -1;
+            filter: blur(20px); /* ทำให้ขอบเบลอเหมือนแสงเรือง */
+            opacity: 0; /* ซ่อนไว้ตอนที่ยังไม่เอาเมาส์ชี้ */
+            border-radius: 24px;
+            transition: opacity 0.4s ease;
+        }
+
+        /* เมื่อเอาเมาส์ชี้การ์ด ให้แสงสว่างขึ้นและขยับการ์ดลอยขึ้นนิดนึง */
+        .profile-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .profile-card:hover::before {
+            opacity: 1;
+        }
+
+        /* ตกแต่งรูปภาพ */
+        .profile-img {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #333;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* เมื่อเอาเมาส์ชี้ที่รูปภาพโดยตรง */
+        .profile-card a:hover .profile-img {
+            transform: scale(1.05);
+            border-color: #a855f7;
+        }
+
+        /* ตกแต่งข้อความ */
+        h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #444;
+            margin-bottom: 15px;
+        }
+
+        p {
+            margin: 8px 0;
+            color: #b3b3b3;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        .university {
+            margin-top: 10px;
+            color: #a855f7;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="profile-card">
+        <!-- ใส่ลิงก์ที่คุณต้องการใน href เช่น ลิงก์เฟสบุ๊ค หรือเว็บคณะ (ตอนนี้ใส่เว็บ ม.นครพนม ไว้ให้ค่ะ) -->
+        <a href="https://www.npu.ac.th/" target="_blank">
+            <!-- ดึงรูปภาพเดิมจากหน้าเว็บของคุณมาใส่ให้แล้วค่ะ -->
+            <img class="profile-img" src="https://stickershop.line-scdn.net/stickershop/v1/product/8408791/LINEStorePC/main.png?v=1" alt="รูปโปรไฟล์ นาย ธนพล">
+        </a>
+        
+        <h2>นาย ธนพล วะชุม</h2>
+        <p>รหัสนักศึกษา: 674110310051</p>
+        <p>คณะวิศวกรรมศาสตร์</p>
+        <p>สาขาวิศวกรรมคอมพิวเตอร์</p>
+        <p class="university">ม.นครพนม</p>
+    </div>
+
+</body>
+</html>
