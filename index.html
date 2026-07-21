@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gemini Chatbot - Single File App</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Sukhumvit Set', 'Segoe UI', Tahoma, sans-serif;
+    }
+
+    body {
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 15px;
+    }
+
+    .chat-container {
+      width: 100%;
+      max-width: 600px;
+      height: 90vh;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Header & API Section */
+    .chat-header {
+      background: #fff;
+      padding: 16px;
+      border-bottom: 1px solid #eef0f2;
+    }
+
+    .chat-header h2 {
+      font-size: 1.2rem;
+      color: #1a1d20;
+      margin-bottom: 8px;
+    }
+
+    .api-config {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .api-input-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .api-input-group input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #cfd4dc;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .api-input-group button {
+      padding: 8px 16px;
+      background: #0084ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .api-input-group button:hover {
+      background: #006bce;
+    }
+
+    .warning-text {
+      font-size: 0.75rem;
+      color: #e63946;
+      font-weight: 500;
+    }
+
+    /* Messages Area */
+    .messages-box {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #f8f9fa;
+    }
+
+    .message {
+      max-width: 75%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    /* ฟองข้อความผู้ใช้ชิดขวา */
+    .user-message {
+      align-self: flex-end;
+      background: #0084ff;
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    /* ฟองข้อความบอทชิดซ้าย */
+    .bot-message {
+      align-self: flex-start;
+      background: #e4e6eb;
+      color: #050505;
+      border-bottom-left-radius: 4px;
+    }
+
+    /* Typing Indicator */
+    .typing-indicator {
+      align-self: flex-start;
+      background: #e4e6eb;
+      color: #65676b;
+      padding: 10px 16px;
+      border-radius: 16px;
+      border-bottom-left-radius: 4px;
+      font-size: 0.85rem;
+      font-style: italic;
+      display: none;
+    }
+
+    /* Input Area */
+    .input-area {
+      padding: 16px;
+      background: #fff;
+      border-top: 1px solid #eef0f2;
+      display: flex;
+      gap: 10px;
+    }
+
+    .input-area input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid #cfd4dc;
+      border-radius: 24px;
+      outline: none;
+      font-size: 0.95rem;
+    }
+
+    .input-area button {
+      padding: 12px 20px;
+      background: #0084ff;
+      color: white;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .input-area button:hover {
+      background: #006bce;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="chat-container">
+    <!-- Header with API Key setting -->
+    <div class="chat-header">
+      <h2>Gemini AI Assistant</h2>
+      <div class="api-config">
+        <div class="api-input-group">
+          <input type="password" id="apiKeyInput" placeholder="กรอก Gemini API Key ของคุณที่นี่..." />
+          <button onclick="saveApiKey()">บันทึก Key</button>
+        </div>
+        <p class="warning-text">⚠️ เว็บไซต์นี้เป็นเว็บสำหรับฝึกหัด โปรดใช้ API key ของตัวเองเท่านั้น (ระบบจะบันทึกไว้ใน localStorage ของคุณ)</p>
+      </div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="messages-box" id="messagesBox">
+      <div class="message bot-message">สวัสดีค่ะ~ ยินดีที่ได้รู้จักนะคะ มีอะไรให้ช่วยไหมเอ่ย? ถึงหน้าตาจะดูเรียบร้อย แต่พร้อมกวน... เอ้ย! พร้อมช่วยเต็มที่เลยค่ะ 😉</div>
+    </div>
+
+    <!-- Typing Indicator -->
+    <div class="typing-indicator" id="typingIndicator">กำลังพิมพ์...</div>
+
+    <!-- Input Form -->
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="พิมพ์ข้อความตรงนี้..." onkeypress="handleKeyPress(event)" />
+      <button onclick="sendMessage()">ส่ง</button>
+    </div>
+  </div>
+
+  <script>
+    // System Prompt กำหนดบุคลิกบอท
+    const SYSTEM_PROMPT = `คุณคือผู้ช่วย AI ที่มีบุคลิกเรียบร้อย สุภาพมากๆ พูดจาไพเราะ มี "ค่ะ/ขา" เสมอ แต่เป็นคนติดเล่น ชอบตบมุก แกล้งหยอกผู้ใช้แบบอารมณ์ดี น่ารักเป็นกันเอง และให้ข้อมูลที่ถูกต้องเสมอ`;
+
+    // เก็บประวัติแชตทั้งหมดสำหรับส่งกลับไปให้ Gemini จำบริบท
+    let chatHistory = [];
+
+    // โหลด API Key จาก localStorage เมื่อเปิดหน้าเว็บ
+    window.onload = function() {
+      const savedKey = localStorage.getItem('gemini_api_key');
+      if (savedKey) {
+        document.getElementById('apiKeyInput').value = savedKey;
+      }
+    };
+
+    // บันทึก API Key ลง localStorage
+    function saveApiKey() {
+      const key = document.getElementById('apiKeyInput').value.trim();
+      if (key) {
+        localStorage.setItem('gemini_api_key', key);
+        alert('บันทึก API Key เรียบร้อยแล้วค่ะ!');
+      } else {
+        localStorage.removeItem('gemini_api_key');
+        alert('ลบ API Key เรียบร้อยแล้วค่ะ!');
+      }
+    }
+
+    // กด Enter เพื่อส่งข้อความ
+    function handleKeyPress(event) {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
+    }
+
+    // ฟังก์ชั่นส่งข้อความ
+    async function sendMessage() {
+      const inputEl = document.getElementById('userInput');
+      const userText = inputEl.value.trim();
+      const apiKey = localStorage.getItem('gemini_api_key');
+
+      if (!userText) return;
+
+      if (!apiKey) {
+        alert('กรุณากรอกและบันทึก Gemini API Key ก่อนใช้งานนะคะ!');
+        return;
+      }
+
+      // 1. แสดงข้อความผู้ใช้ใน UI (ชิดขวา)
+      appendMessage(userText, 'user-message');
+      inputEl.value = '';
+
+      // 2. เพิ่มข้อความลงในประวัติแชต
+      chatHistory.push({
+        role: "user",
+        parts: [{ text: userText }]
+      });
+
+      // 3. แสดงสถานะกำลังพิมพ์...
+      showTyping(true);
+
+      try {
+        // endpoint ของโมเดล gemini-flash-latest
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent`;
+
+        const requestBody = {
+          system_instruction: {
+            parts: [{ text: SYSTEM_PROMPT }]
+          },
+          contents: chatHistory // ส่งประวัติแชตทั้งหมดเพื่อจำบริบท
+        };
+
+        // 4. เรียก API ผ่าน fetch โดยใส่ Key ใน header x-goog-api-key
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': apiKey
+          },
+          body: JSON.stringify(requestBody)
+        });
+
+        const data = await response.json();
+
+        showTyping(false);
+
+        if (response.ok && data.candidates && data.candidates[0].content) {
+          const botResponse = data.candidates[0].content.parts[0].text;
+
+          // แสดงข้อความตอบกลับใน UI (ชิดซ้าย)
+          appendMessage(botResponse, 'bot-message');
+
+          // บันทึกคำตอบบอทลงประวัติแชต
+          chatHistory.push({
+            role: "model",
+            parts: [{ text: botResponse }]
+          });
+
+        } else {
+          const errorMsg = data.error ? data.error.message : 'เกิดข้อผิดพลาดในการเชื่อมต่อ';
+          appendMessage(`อุ๊ย เกิดข้อผิดพลาดค่ะ: ${errorMsg}`, 'bot-message');
+        }
+
+      } catch (err) {
+        showTyping(false);
+        appendMessage('ไม่สามารถเชื่อมต่อได้เลยค่ะ ลองเช็กอินเทอร์เน็ตหรือ API Key อีกทีนะคะ', 'bot-message');
+        console.error(err);
+      }
+    }
+
+    // เพิ่มฟองข้อความลงหน้าจอ
+    function appendMessage(text, className) {
+      const messagesBox = document.getElementById('messagesBox');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `message ${className}`;
+      msgDiv.textContent = text;
+      
+      const typingIndicator = document.getElementById('typingIndicator');
+      messagesBox.insertBefore(msgDiv, typingIndicator);
+      
+      messagesBox.scrollTop = messagesBox.scrollHeight;
+    }
+
+    // แสดง/ซ่อน สถานะกำลังพิมพ์
+    function showTyping(show) {
+      const typingIndicator = document.getElementById('typingIndicator');
+      const messagesBox = document.getElementById('messagesBox');
+      
+      typingIndicator.style.display = show ? 'block' : 'none';
+      if (show) {
+        messagesBox.scrollTop = messagesBox.scrollHeight;
+      }
+    }
+  </script>
+</body>
+</html>
